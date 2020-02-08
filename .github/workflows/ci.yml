@@ -1,0 +1,23 @@
+name: CI
+on: [push]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      name: Run actions/checkout@v1
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libncurses-dev
+    - name: Clean project
+      run: make clean
+    - name: Initialize project
+      run: make init
+    - name: Build source
+      run: make build
+    - name: Install
+      run: |
+        sudo make install
+        poe --version
