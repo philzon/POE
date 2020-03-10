@@ -172,6 +172,10 @@ void Buffer::up()
 	if (mCursor.y > 0)
 		--mCursor.y;
 
+	// Retain horizontal position from previous recorded position.
+	mCursor.x = mPreviousColumn;
+
+	// Boundry check - keep cursor away from EOL.
 	if (mCursor.x > mLines.at(mCursor.y).size())
 		mCursor.x = mLines.at(mCursor.y).size();
 }
@@ -183,6 +187,10 @@ void Buffer::down()
 	if (mCursor.y < mLines.size() - 1)
 		++mCursor.y;
 
+	// Retain horizontal position from previous recorded position.
+	mCursor.x = mPreviousColumn;
+
+	// Boundry check - keep cursor away from invalid position.
 	if (mCursor.x > mLines.at(mCursor.y).size())
 		mCursor.x = mLines.at(mCursor.y).size();
 }
@@ -201,7 +209,8 @@ void Buffer::left()
 			mCursor.x = mLines.at(--mCursor.y).size();
 	}
 
-	// mPreviousColumn = mCursor.x;
+	// Update last known horizontal position.
+	mPreviousColumn = mCursor.x;
 }
 
 void Buffer::right()
@@ -221,7 +230,8 @@ void Buffer::right()
 		}
 	}
 
-	// mPreviousColumn = mCursor.x;
+	// Update last known horizontal position.
+	mPreviousColumn = mCursor.x;
 }
 
 void Buffer::erase()
@@ -283,6 +293,9 @@ void Buffer::insert(char ch)
 		mLines.at(mCursor.y).insert(mCursor.x++, std::string(1, ch));
 
 	mDirty = true;
+
+	// Update last known horizontal position.
+	mPreviousColumn = mCursor.x;
 }
 
 void Buffer::insert(const std::string &text)
@@ -357,7 +370,7 @@ int Buffer::getFlag(unsigned int line) const
 
 	if (it == mFlags.end())
 		return Flag::FLAG_NONE;
-	
+
 	return it->second;
 }
 
