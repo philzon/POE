@@ -67,10 +67,23 @@ void View::render(unsigned int left, unsigned int top, unsigned int width, unsig
 
 	Cursor cursor = mBuffer.getCursor();
 
+	// Track offsets (rulers, flags etc).
+	unsigned int flagOffset = 0;
+	unsigned int rulerOffset = 0;
+
+	if (mFlags && mBuffer.hasFlags())
+		flagOffset = 2;
+
+	if (mRuler)
+		rulerOffset = std::to_string(mBuffer.getLines()).size() + 1;
+
+	// Total offset.
+	unsigned int offset = flagOffset + rulerOffset + 1;
+
 	// Adjust view if horizontal cursor goes out of view north.
 	if (cursor.y < mScrollH)
 		mScrollH = cursor.y;
-	
+
 	// Adjust view if horizontal cursor goes out of view south.
 	if (cursor.y > (mScrollH + height) - 1)
 		mScrollH = (cursor.y - height) + 1;
@@ -78,23 +91,13 @@ void View::render(unsigned int left, unsigned int top, unsigned int width, unsig
 	// Adjust view if vertical cursor goes out of view west.
 	if (cursor.x < mScrollV)
 		mScrollV = cursor.x;
-	
-	// Adjust view if vertical cursor goes out of view east.
-	if (cursor.x > (mScrollV + width) - 1)
-		mScrollV = (cursor.x - width) + 1;
 
-	// Track offsets (rulers, flags etc).
-	unsigned int flagOffset = 0;
-	unsigned int rulerOffset = 0;
+	// Adjust view if vertical cursor goes out of view east.
+	if (cursor.x > (mScrollV + (width - offset)) - 1)
+		mScrollV = (cursor.x - (width - offset)) + 1;
 
 	// Set current line display.
 	unsigned int line = mScrollH + 1;
-
-	if (mFlags && mBuffer.hasFlags())
-		flagOffset = 2;
-
-	if (mRuler)
-		rulerOffset = std::to_string(mBuffer.getLines()).size() + 1;
 
 	// Render all buffer in the view lines.
 	for (int y = 0; y < height; ++y)
@@ -141,7 +144,7 @@ void View::render(unsigned int left, unsigned int top, unsigned int width, unsig
 				break;
 
 			// Print character.
-			mvaddch(y + top, x + left + flagOffset + rulerOffset, mBuffer.get(mScrollH + y, mScrollV + x));
+			mvaddch(y + top, x + left + offset, mBuffer.get(mScrollH + y, mScrollV + x));
 		}
 
 		++line;
@@ -156,7 +159,7 @@ void View::render(unsigned int left, unsigned int top, unsigned int width, unsig
 	// mvaddch(cursor.y - mScrollH, cursor.x - mScrollV, '*');
 
 	// Render the cursor.
-	move((cursor.y - mScrollH) + top, (cursor.x - mScrollV) + left + flagOffset + rulerOffset);
+	move((cursor.y - mScrollH) + top, (cursor.x - mScrollV) + left + offset);
 }
 
 ////////////////////////////////////////////////////////////////////////
