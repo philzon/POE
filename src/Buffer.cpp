@@ -400,6 +400,11 @@ void Buffer::setCursor(const Cursor &cursor)
 		mCursor.x = mLines.at(mCursor.y).size() - 1;
 }
 
+void Buffer::setDirty(bool state)
+{
+	mDirty = state;
+}
+
 void Buffer::setFlag(unsigned int line, Flag flag)
 {
 	mFlags[line] = flag;

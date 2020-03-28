@@ -209,6 +209,8 @@ bool Editor::open(const std::string &path)
 	if (insertMode)
 		mBuffer.setReadOnlyMode(insertMode);
 
+	mBuffer.setDirty(false);
+
 	return true;
 }
 

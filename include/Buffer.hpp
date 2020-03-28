@@ -65,6 +65,7 @@ public:
 	// Setters.
 	void setCursor(unsigned int line, unsigned int column);
 	void setCursor(const Cursor &cursor);
+	void setDirty(bool state);
 	void setFlag(unsigned int line, Flag flag);
 	void setInsertMode(bool state);
 	void setMultilineMode(bool state);
