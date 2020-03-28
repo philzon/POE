@@ -42,8 +42,6 @@ private:
 	bool mShowFlags;
 
 	std::string mError;
-	std::string mClipboard;
-	std::string mCommand;
 
 	View mView;
 };
