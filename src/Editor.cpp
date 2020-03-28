@@ -127,10 +127,6 @@ void Editor::render()
 	if (mBuffer.getWrap() > 0)
 		renderWrapper(left, top, width, height, leftOffset, topOffset);
 
-	// Render read-only symbol on cursor.
-	// if (mBuffer.isReadOnlyMode())
-	// mvaddch(cursor.y - mScrollH, cursor.x - mScrollV, '*');
-
 	// Render the cursor.
 	move((cursor.y - mScrollH) + top, (cursor.x - mScrollV) + left + leftOffset);
 }

@@ -14,14 +14,6 @@ struct Cursor
 	unsigned int y;
 };
 
-struct Highlight
-{
-	int x1;
-	int y1;
-	int x2;
-	int y2;
-};
-
 enum Flag
 {
 	FLAG_NONE,
@@ -61,7 +53,6 @@ public:
 	char get(unsigned int line, unsigned int column) const;
 	int getColumns(unsigned int line) const;
 	std::string getError() const;
-	Highlight getHighlight() const;
 	int getLines() const;
 	Cursor getCursor() const;
 	int getFlag(unsigned int line) const;
@@ -75,8 +66,6 @@ public:
 	void setCursor(unsigned int line, unsigned int column);
 	void setCursor(const Cursor &cursor);
 	void setFlag(unsigned int line, Flag flag);
-	// void setHighlight(int x1, int y1, int x2, int y2);
-	// void setHighlight(const Highlight &highlight);
 	void setInsertMode(bool state);
 	void setMultilineMode(bool state);
 	void setReadOnlyMode(bool state);
@@ -99,7 +88,6 @@ private:
 	// Cursor.
 	Cursor mCursor;
 	std::unordered_map<unsigned int, int> mFlags;
-	Highlight mHighlight;
 	unsigned int mPreviousColumn;
 	unsigned int mWrap;
 

@@ -9,10 +9,6 @@ Buffer::Buffer()
 	mReadOnlyMode = false;
 	mCursor.x = 0;
 	mCursor.y = 0;
-	mHighlight.x1 = 0;
-	mHighlight.y1 = 0;
-	mHighlight.x2 = 0;
-	mHighlight.y2 = 0;
 	mPreviousColumn = 0;
 	mWrap = 0;
 	mTitle = "Untitled Document.txt";
@@ -27,10 +23,6 @@ Buffer::Buffer(const std::vector<std::string> &lines)
 	mReadOnlyMode = false;
 	mCursor.x = 0;
 	mCursor.y = 0;
-	mHighlight.x1 = 0;
-	mHighlight.y1 = 0;
-	mHighlight.x2 = 0;
-	mHighlight.y2 = 0;
 	mPreviousColumn = 0;
 	mWrap = 0;
 	mTitle = "Untitled Document.txt";
@@ -52,10 +44,6 @@ Buffer::Buffer(const Buffer &other)
 	mReadOnlyMode = other.mReadOnlyMode;
 	mCursor.x = other.mCursor.x;
 	mCursor.y = other.mCursor.y;
-	mHighlight.x1 = other.mHighlight.x1;
-	mHighlight.y1 = other.mHighlight.y1;
-	mHighlight.x2 = other.mHighlight.x2;
-	mHighlight.y2 = other.mHighlight.y2;
 	mPreviousColumn = other.mPreviousColumn;
 	mWrap = other.mWrap;
 	mTitle = other.mTitle;
@@ -73,10 +61,6 @@ Buffer &Buffer::operator=(const Buffer &other)
 		mReadOnlyMode = other.mReadOnlyMode;
 		mCursor.x = other.mCursor.x;
 		mCursor.y = other.mCursor.y;
-		mHighlight.x1 = other.mHighlight.x1;
-		mHighlight.y1 = other.mHighlight.y1;
-		mHighlight.x2 = other.mHighlight.x2;
-		mHighlight.y2 = other.mHighlight.y2;
 		mPreviousColumn = other.mPreviousColumn;
 		mWrap = other.mWrap;
 		mTitle = other.mTitle;
@@ -346,11 +330,6 @@ std::string Buffer::getError() const
 	return mError;
 }
 
-Highlight Buffer::getHighlight() const
-{
-	return mHighlight;
-}
-
 int Buffer::getLines() const
 {
 	return mLines.size();
@@ -444,19 +423,6 @@ void Buffer::setInsertMode(bool state)
 {
 	mInsertMode = state;
 }
-
-/*void Buffer::setHighlight(int x1, int y1, int x2, int y2)
-{
-	mHighlight.x1 = x1;
-	mHighlight.y1 = y1;
-	mHighlight.x2 = x2;
-	mHighlight.y2 = y2;
-}
-
-void Buffer::setHighlight(const Highlight &highlight)
-{
-	mHighlight = highlight;
-}*/
 
 void Buffer::setMultilineMode(bool state)
 {
