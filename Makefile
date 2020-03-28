@@ -37,9 +37,6 @@ init:
 	@mkdir -p $(OBJDIR)
 	@mkdir -p $(BINDIR)
 
-lint:
-	@echo "Linting ..."
-
 build: $(BINDIR)/$(TITLE)
 
 $(BINDIR)/$(TITLE): $(OBJECTS)
