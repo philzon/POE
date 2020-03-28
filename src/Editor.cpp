@@ -13,10 +13,6 @@ void Editor::input(int ch)
 {
 	switch (ch)
 	{
-	// Copy (CTRL + C).
-	case ('c' & 037):
-		copy();
-		break;
 	// Disable line (CTRL + D).
 	case ('d' & 037):
 		if (mView.getBuffer()->getFlag(mView.getBuffer()->getCursor().y) == Flag::FLAG_DISABLED)
@@ -24,37 +20,13 @@ void Editor::input(int ch)
 		else
 			mView.getBuffer()->setFlag(mView.getBuffer()->getCursor().y, Flag::FLAG_DISABLED);
 		break;
-	// Open code execution (CTRL + E).
-	case ('e' & 037):
-		// TODO: implement me!
-		break;
-	// Open (CTRL + O).
-	case ('o' & 037):
-		// TODO: implement me!
-		break;
 	// Close buffer (CTRL + Q).
 	case ('q' & 037):
 		close();
 		break;
-	// Toggle ruler (CTRL + R)
-	case ('r' & 037):
-		// TODO:
-		break;
 	// Save (CTRL + S).
 	case ('s' & 037):
 		save(mView.getBuffer()->getTitle());
-		break;
-	// Paste (CTRL + V).
-	case ('v' & 037):
-		paste();
-		break;
-	// Close? (CTRL + W).
-	case ('w' & 037):
-		// TODO: implement me!
-		break;
-	// Cut (CTRL + X).
-	case ('x' & 037):
-		cut();
 		break;
 	case KEY_UP:
 		mView.getBuffer()->up();
@@ -207,18 +179,3 @@ bool Editor::isRunning() const
 ////////////////////////////////////////////////////////////////////////
 // Private
 ////////////////////////////////////////////////////////////////////////
-
-void Editor::cut()
-{
-	// TODO:
-}
-
-void Editor::copy()
-{
-	// TODO:
-}
-
-void Editor::paste()
-{
-	// TODO:
-}
