@@ -4,6 +4,9 @@ Editor::Editor()
 {
 	mIsRunning = true;
 	mShowRuler = true;
+	mShowFlags = true;
+	mScrollV = 0;
+	mScrollH = 0;
 }
 
 Editor::~Editor()
@@ -15,10 +18,10 @@ void Editor::input(int ch)
 	{
 	// Disable line (CTRL + D).
 	case ('d' & 037):
-		if (mView.getBuffer()->getFlag(mView.getBuffer()->getCursor().y) == Flag::FLAG_DISABLED)
-			mView.getBuffer()->setFlag(mView.getBuffer()->getCursor().y, Flag::FLAG_NONE);
+		if (mBuffer.getFlag(mBuffer.getCursor().y) == Flag::FLAG_DISABLED)
+			mBuffer.setFlag(mBuffer.getCursor().y, Flag::FLAG_NONE);
 		else
-			mView.getBuffer()->setFlag(mView.getBuffer()->getCursor().y, Flag::FLAG_DISABLED);
+			mBuffer.setFlag(mBuffer.getCursor().y, Flag::FLAG_DISABLED);
 		break;
 	// Close buffer (CTRL + Q).
 	case ('q' & 037):
@@ -26,42 +29,110 @@ void Editor::input(int ch)
 		break;
 	// Save (CTRL + S).
 	case ('s' & 037):
-		save(mView.getBuffer()->getTitle());
+		save(mBuffer.getTitle());
 		break;
 	case KEY_UP:
-		mView.getBuffer()->up();
+		mBuffer.up();
 		break;
 	case KEY_DOWN:
-		mView.getBuffer()->down();
+		mBuffer.down();
 		break;
 	case KEY_LEFT:
-		mView.getBuffer()->left();
+		mBuffer.left();
 		break;
 	case KEY_RIGHT:
-		mView.getBuffer()->right();
+		mBuffer.right();
 		break;
 	case KEY_IC:
-		mView.getBuffer()->setInsertMode(!mView.getBuffer()->isInsertMode());
+		mBuffer.setInsertMode(!mBuffer.isInsertMode());
 		break;
 	case KEY_BACKSPACE:
 	case '\b':
 	case 127:
-		mView.getBuffer()->erase();
+		mBuffer.erase();
 		break;
 	case KEY_DC:
-		mView.getBuffer()->del();
+		mBuffer.del();
 		break;
 	// Do nothing with the resize signal.
 	case KEY_RESIZE:break;
 	default:
-		mView.getBuffer()->insert(static_cast<char>(ch));
+		mBuffer.insert(static_cast<char>(ch));
 		break;
 	}
 }
 
 void Editor::render()
 {
-	mView.render(0, 0, COLS, LINES);
+	// Do not render anything if the buffer contains 0 lines.
+	if (mBuffer.getLines() == 0)
+		return;
+
+	// Screen position and size.
+	int left = 0;
+	int top = 0;
+	int width = COLS;
+	int height = LINES;
+
+	width = width - left;
+	height = height - left;
+
+	Cursor cursor = mBuffer.getCursor();
+
+	// Track offsets (rulers, flags etc).
+	unsigned int leftOffset = 0;
+	unsigned int topOffset = 0;
+
+	// Adjust view if horizontal cursor goes out of view north.
+	if (cursor.y < mScrollH)
+		mScrollH = cursor.y;
+
+	// Adjust view if horizontal cursor goes out of view south.
+	if (cursor.y > (mScrollH + (height - topOffset)) - 1)
+		mScrollH = (cursor.y - (height - topOffset)) + 1;
+
+	if (mShowFlags && mBuffer.hasFlags())
+		renderFlags(left, top, width, height, leftOffset, topOffset);
+
+	if (mShowRuler)
+		renderLinesNumbers(left, top, width, height, leftOffset, topOffset);
+
+	// Adjust view if vertical cursor goes out of view west.
+	if (cursor.x < mScrollV)
+		mScrollV = cursor.x;
+
+	// Adjust view if vertical cursor goes out of view east.
+	if (cursor.x > (mScrollV + (width - leftOffset)) - 1)
+		mScrollV = (cursor.x - (width - leftOffset)) + 1;
+
+	// Render all buffer in the view lines.
+	for (int y = 0; y < height; ++y)
+	{
+		// Prevent rendering of text when out of bounds.
+		if ((mScrollH + y + 1) > (mBuffer.getLines()))
+			break;
+
+		for (int x = 0; x < width; ++x)
+		{
+			// Prevent rendering of text when out of bounds.
+			if ((mScrollV + x + 1) > (mBuffer.getColumns(mScrollH + y)))
+				break;
+
+			// Print character.
+			mvaddch(y + top, x + left + leftOffset, mBuffer.get(mScrollH + y, mScrollV + x));
+		}
+	}
+
+	// Render wrap border.
+	// if (mBuffer.getWrap() > 0)
+	// mvaddch(cursor.y - mScrollH, mBuffer.getWrap() - mScrollV, '|');
+
+	// Render read-only symbol on cursor.
+	// if (mBuffer.isReadOnlyMode())
+	// mvaddch(cursor.y - mScrollH, cursor.x - mScrollV, '*');
+
+	// Render the cursor.
+	move((cursor.y - mScrollH) + top, (cursor.x - mScrollV) + left + leftOffset);
 }
 
 void Editor::close()
@@ -114,17 +185,17 @@ bool Editor::open(const std::string &path)
 	if (tokens.size() > 0)
 		file = tokens.at(0);
 
-	if (!mView.getBuffer()->read(file, append))
+	if (!mBuffer.read(file, append))
 	{
-		mError = mView.getBuffer()->getError();
+		mError = mBuffer.getError();
 		return false;
 	}
 
-	mView.getBuffer()->setTitle(file);
+	mBuffer.setTitle(file);
 
 	// TODO: cursor can be set to an invalid position.
 	// Set cursor.
-	Cursor cursor = mView.getBuffer()->getCursor();
+	Cursor cursor = mBuffer.getCursor();
 
 	if (!append)
 		cursor = Cursor({0, 0});
@@ -135,23 +206,23 @@ bool Editor::open(const std::string &path)
 	if (tokens.size() > 2)
 		cursor.x = std::strtol(tokens.at(2).c_str(), nullptr, 10) - 1;
 
-	mView.getBuffer()->setCursor(cursor);
+	mBuffer.setCursor(cursor);
 
 	// Apply buffer modes.
 	if (readOnlyMode)
-		mView.getBuffer()->setReadOnlyMode(readOnlyMode);
+		mBuffer.setReadOnlyMode(readOnlyMode);
 
 	if (insertMode)
-		mView.getBuffer()->setReadOnlyMode(insertMode);
+		mBuffer.setReadOnlyMode(insertMode);
 
 	return true;
 }
 
 bool Editor::save(const std::string &path)
 {
-	if (!mView.getBuffer()->write(path))
+	if (!mBuffer.write(path))
 	{
-		mError = mView.getBuffer()->getError();
+		mError = mBuffer.getError();
 		return false;
 	}
 
@@ -179,3 +250,64 @@ bool Editor::isRunning() const
 ////////////////////////////////////////////////////////////////////////
 // Private
 ////////////////////////////////////////////////////////////////////////
+
+void Editor::renderFlags(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+{
+	for (int y = 0; y < height; ++y)
+	{
+		bool disabled = false;
+
+		// Draw flag.
+		if (mShowFlags && mBuffer.hasFlags())
+		{
+			switch (mBuffer.getFlag(mScrollH + y))
+			{
+				case Flag::FLAG_DISABLED:
+					disabled = true;
+					mvaddch(y + top + topOffset, left + leftOffset, 'D');
+					break;
+			}
+		}
+	}
+
+	// Indicate that other rendering operations will have to
+	// be shifted to the right.
+	leftOffset += 2;
+}
+
+void Editor::renderLinesNumbers(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+{
+	unsigned int line = mScrollH;
+
+	for (int y = 0; y < height; ++y)
+	{
+		bool disabled = false;
+
+		// Check if line is disabled from flags.
+		if (mBuffer.hasFlags())
+		{
+			switch (mBuffer.getFlag(mScrollH + y))
+			{
+				case Flag::FLAG_DISABLED:
+					disabled = true;
+					break;
+			}
+		}
+
+		// Do not render rulers for lines which are disabled.
+		if (!disabled)
+		{
+			++line;
+
+			// Allign right to left.
+			int currentSize = std::to_string(line).size();
+			int maxSize = std::to_string(mBuffer.getLines()).size();
+
+			mvprintw(y + top + topOffset, left + leftOffset + (maxSize - currentSize), std::to_string(line).c_str());
+		}
+	}
+
+	// Indicate that other rendering operations will have to
+	// be shifted to the right.
+	leftOffset += std::to_string(mBuffer.getLines()).size() + 1;
+}

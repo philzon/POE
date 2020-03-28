@@ -11,7 +11,6 @@
 #include <ncurses.h>
 
 #include "Buffer.hpp"
-#include "View.hpp"
 
 class Editor
 {
@@ -33,13 +32,20 @@ public:
 	void showRuler(bool state);
 
 private:
+	// Helper functions for rendering.
+	void renderFlags(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
+	void renderLinesNumbers(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
+
 	bool mIsRunning;
+
+	int mScrollV;
+	int mScrollH;
 	bool mShowRuler;
 	bool mShowFlags;
 
 	std::string mError;
 
-	View mView;
+	Buffer mBuffer;
 };
 
 #endif // EDITOR_HPP
