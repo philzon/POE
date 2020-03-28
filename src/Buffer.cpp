@@ -12,6 +12,7 @@ Buffer::Buffer()
 	mPreviousColumn = 0;
 	mWrap = 0;
 	mTitle = "Untitled Document.txt";
+	mLines.push_back(std::string(""));
 }
 
 Buffer::Buffer(const std::vector<std::string> &lines)
@@ -21,18 +22,17 @@ Buffer::Buffer(const std::vector<std::string> &lines)
 	mInsertMode = false;
 	mMultilineMode = true;
 	mReadOnlyMode = false;
-	mCursor.x = 0;
-	mCursor.y = 0;
 	mPreviousColumn = 0;
 	mWrap = 0;
 	mTitle = "Untitled Document.txt";
 
+	mLines.push_back(std::string(""));
+
 	if (!lines.empty())
-	{
 		mLines = lines;
-		mCursor.x = lines.at(lines.size() - 1).size();
-		mCursor.y = lines.size() - 1;
-	}
+
+	mCursor.x = lines.at(lines.size() - 1).size();
+	mCursor.y = lines.size() - 1;
 }
 
 Buffer::Buffer(const Buffer &other)
