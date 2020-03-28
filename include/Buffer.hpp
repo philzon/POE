@@ -14,14 +14,6 @@ struct Cursor
 	unsigned int y;
 };
 
-enum Flag
-{
-	FLAG_NONE,
-	FLAG_TODO,
-	FLAG_DISABLED,
-	FLAG_NOTEs
-};
-
 class Buffer
 {
 public:
@@ -55,7 +47,6 @@ public:
 	std::string getError() const;
 	int getLines() const;
 	Cursor getCursor() const;
-	int getFlag(unsigned int line) const;
 	std::string getLine(unsigned int line) const;
 	std::string getTitle() const;
 	unsigned int getWrap() const;
@@ -66,7 +57,6 @@ public:
 	void setCursor(unsigned int line, unsigned int column);
 	void setCursor(const Cursor &cursor);
 	void setDirty(bool state);
-	void setFlag(unsigned int line, Flag flag);
 	void setInsertMode(bool state);
 	void setMultilineMode(bool state);
 	void setReadOnlyMode(bool state);
@@ -87,7 +77,6 @@ private:
 
 	// Cursor.
 	Cursor mCursor;
-	std::unordered_map<unsigned int, int> mFlags;
 	unsigned int mPreviousColumn;
 	unsigned int mWrap;
 

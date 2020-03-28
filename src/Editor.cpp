@@ -15,13 +15,6 @@ void Editor::input(int ch)
 {
 	switch (ch)
 	{
-	// Disable line (CTRL + D).
-	case ('d' & 037):
-		if (mBuffer.getFlag(mBuffer.getCursor().y) == Flag::FLAG_DISABLED)
-			mBuffer.setFlag(mBuffer.getCursor().y, Flag::FLAG_NONE);
-		else
-			mBuffer.setFlag(mBuffer.getCursor().y, Flag::FLAG_DISABLED);
-		break;
 	// Close buffer (CTRL + Q).
 	case ('q' & 037):
 		close();
@@ -273,30 +266,16 @@ void Editor::renderLinesNumbers(int left, int top, int width, int height, unsign
 
 	for (int y = 0; y < height; ++y)
 	{
+		++line;
+
 		if (y > mBuffer.getLines() - 1)
 			break;
-
-		bool disabled = false;
-
-		// Check if line is disabled from flags.
-		if (mBuffer.hasFlags())
-		{
-			switch (mBuffer.getFlag(mScrollH + y))
-			{
-				case Flag::FLAG_DISABLED:
-					disabled = true;
-					break;
-			}
-		}
 
 		// Allign right to left.
 		int currentSize = std::to_string(line).size();
 		int maxSize = std::to_string(mBuffer.getLines()).size();
 
-		if (disabled)
-			mvaddch(y + top + topOffset, left + leftOffset + maxSize - 1, '-');
-		else
-			mvprintw(y + top + topOffset, left + leftOffset + (maxSize - currentSize), std::to_string(++line).c_str());
+		mvprintw(y + top + topOffset, left + leftOffset + (maxSize - currentSize), std::to_string(line).c_str());
 	}
 
 	// Indicate that other rendering operations will have to

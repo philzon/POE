@@ -119,9 +119,6 @@ bool Buffer::write(const std::string &path)
 
 		for (std::size_t i = 0; i < mLines.size(); ++i)
 		{
-			if (getFlag(i) == Flag::FLAG_DISABLED)
-				continue;
-
 			stream << mLines.at(i);
 
 			if (i < mLines.size() - 1)
@@ -330,27 +327,9 @@ Cursor Buffer::getCursor() const
 	return mCursor;
 }
 
-int Buffer::getFlag(unsigned int line) const
-{
-	if (line > mLines.size())
-		return Flag::FLAG_NONE;
-
-	std::unordered_map<unsigned int, int>::const_iterator it = mFlags.find(line);
-
-	if (it == mFlags.end())
-		return Flag::FLAG_NONE;
-
-	return it->second;
-}
-
 std::string Buffer::getLine(unsigned int line) const
 {
 	return mLines.at(line);
-}
-
-bool Buffer::hasFlags() const
-{
-	return !mFlags.empty();
 }
 
 std::string Buffer::toString() const
@@ -405,15 +384,6 @@ void Buffer::setDirty(bool state)
 	mDirty = state;
 }
 
-void Buffer::setFlag(unsigned int line, Flag flag)
-{
-	mFlags[line] = flag;
-
-	// FLAG_NONE should remove the element.
-	if (flag == FLAG_NONE)
-		mFlags.erase(line);
-}
-
 void Buffer::setInsertMode(bool state)
 {
 	mInsertMode = state;
@@ -445,20 +415,6 @@ void Buffer::setWrap(unsigned int amount)
 
 void Buffer::newline()
 {
-	// TODO: performance hit here probably!
-	// Bump all flags.
-	std::unordered_map<unsigned int, int> flags;
-
-	for (std::pair<unsigned int, int> element : mFlags)
-	{
-		if (element.first >= mCursor.y)
-			flags[element.first + 1] = element.second;
-		else
-			flags[element.first] = element.second;
-	}
-
-	mFlags = flags;
-
 	// Get the rest of the current line's content if there are any.
 	std::string buf = mLines.at(mCursor.y).substr(mCursor.x, mLines.at(mCursor.y).size());
 
@@ -475,36 +431,15 @@ void Buffer::newline()
 
 void Buffer::removeline()
 {
-	if (mCursor.y > 0)
-	{
-		// Disable any flags on this line.
-		setFlag(mCursor.y, FLAG_NONE);
+	// Get the rest of the current line's content if there are any.
+	std::string buf = mLines.at(mCursor.y);
 
-		// Drag down flags.
-		// TODO: performance hit here probably!
-		// Bump all flags.
-		std::unordered_map<unsigned int, int> flags;
+	// Remove current line and reset cursor.
+	mLines.erase(mLines.begin() + mCursor.y);
 
-		for (std::pair<unsigned int, int> element : mFlags)
-		{
-			if (element.first >= mCursor.y)
-				flags[element.first - 1] = element.second;
-			else
-				flags[element.first] = element.second;
-		}
+	// Reset cursor to new line.
+	mCursor.x = mLines.at(--mCursor.y).size();
 
-		mFlags = flags;
-
-		// Get the rest of the current line's content if there are any.
-		std::string buf = mLines.at(mCursor.y);
-
-		// Remove current line and reset cursor.
-		mLines.erase(mLines.begin() + mCursor.y);
-
-		// Reset cursor to new line.
-		mCursor.x = mLines.at(--mCursor.y).size();
-
-		// Append the previous content to the current line.
-		mLines.at(mCursor.y) += buf;
-	}
+	// Append the previous content to the current line.
+	mLines.at(mCursor.y) += buf;
 }
