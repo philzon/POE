@@ -82,6 +82,8 @@ void Editor::render()
 	unsigned int leftOffset = 0;
 	unsigned int topOffset = 0;
 
+	renderTitle(left, top, width, height, leftOffset, topOffset);
+
 	// Adjust view if horizontal cursor goes out of view north.
 	if (cursor.y < mScrollH)
 		mScrollH = cursor.y;
@@ -115,7 +117,7 @@ void Editor::render()
 				break;
 
 			// Print character.
-			mvaddch(y + top, x + left + leftOffset, mBuffer.get(mScrollH + y, mScrollV + x));
+			mvaddch(y + top + topOffset, x + left + leftOffset, mBuffer.get(mScrollH + y, mScrollV + x));
 		}
 	}
 
@@ -124,7 +126,7 @@ void Editor::render()
 		renderWrapper(left, top, width, height, leftOffset, topOffset);
 
 	// Render the cursor.
-	move((cursor.y - mScrollH) + top, (cursor.x - mScrollV) + left + leftOffset);
+	move((cursor.y - mScrollH) + top + topOffset, (cursor.x - mScrollV) + left + leftOffset);
 }
 
 void Editor::close()
@@ -242,6 +244,26 @@ bool Editor::isRunning() const
 ////////////////////////////////////////////////////////////////////////
 // Private
 ////////////////////////////////////////////////////////////////////////
+
+void Editor::renderTitle(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+{
+	std::string title = "-- ";
+	title = title + mBuffer.getTitle();
+
+	if (mBuffer.isDirty())
+		title = title + "*";
+
+	if (mBuffer.isReadOnlyMode())
+		title = title + " [R]";
+
+	title = title + std::string(COLS - title.size(), '-');
+
+	mvprintw(0, 0, title.c_str());
+
+	// Indicate that other rendering operations will have to
+	// be shifted down.
+	++topOffset;
+}
 
 void Editor::renderLinesNumbers(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
 {
