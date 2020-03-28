@@ -33,10 +33,6 @@ public:
 	void showRuler(bool state);
 
 private:
-	void cut();
-	void copy();
-	void paste();
-
 	bool mIsRunning;
 	bool mShowRuler;
 	bool mShowFlags;
