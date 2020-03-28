@@ -123,9 +123,9 @@ void Editor::render()
 		}
 	}
 
-	// Render wrap border.
-	// if (mBuffer.getWrap() > 0)
-	// mvaddch(cursor.y - mScrollH, mBuffer.getWrap() - mScrollV, '|');
+	// Render wrap boundries.
+	if (mBuffer.getWrap() > 0)
+		renderWrapper(left, top, width, height, leftOffset, topOffset);
 
 	// Render read-only symbol on cursor.
 	// if (mBuffer.isReadOnlyMode())
@@ -214,6 +214,8 @@ bool Editor::open(const std::string &path)
 
 	if (insertMode)
 		mBuffer.setReadOnlyMode(insertMode);
+
+	mBuffer.setWrap(10);
 
 	return true;
 }
@@ -310,4 +312,9 @@ void Editor::renderLinesNumbers(int left, int top, int width, int height, unsign
 	// Indicate that other rendering operations will have to
 	// be shifted to the right.
 	leftOffset += std::to_string(mBuffer.getLines()).size() + 1;
+}
+
+void Editor::renderWrapper(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+{
+	mvaddch(mBuffer.getCursor().y - mScrollH + topOffset, mBuffer.getWrap() - mScrollV + leftOffset, '<');
 }
