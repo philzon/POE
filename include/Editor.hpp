@@ -11,7 +11,6 @@
 #include <ncurses.h>
 
 #include "Buffer.hpp"
-#include "Logger.hpp"
 #include "View.hpp"
 
 class Editor
@@ -47,8 +46,6 @@ private:
 	std::string mCommand;
 
 	View mView;
-
-	std::shared_ptr<Logger> mLogger;
 };
 
 #endif // EDITOR_HPP
