@@ -47,7 +47,7 @@ $(BINDIR)/$(TITLE): $(OBJECTS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
-	@echo "CC    $@"
+	@echo "CC  $@"
 
 install:
 	@cp $(BINDIR)/$(TITLE) $(INSDIR)
