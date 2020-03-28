@@ -134,6 +134,8 @@ bool Buffer::write(const std::string &path)
 		return false;
 	}
 
+	mDirty = false;
+
 	return true;
 }
 
