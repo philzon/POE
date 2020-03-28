@@ -4,7 +4,6 @@ Editor::Editor()
 {
 	mIsRunning = true;
 	mShowRuler = true;
-	mShowFlags = true;
 	mScrollV = 0;
 	mScrollH = 0;
 }
@@ -90,9 +89,6 @@ void Editor::render()
 	// Adjust view if horizontal cursor goes out of view south.
 	if (cursor.y > (mScrollH + (height - topOffset)) - 1)
 		mScrollH = (cursor.y - (height - topOffset)) + 1;
-
-	if (mShowFlags && mBuffer.hasFlags())
-		renderFlags(left, top, width, height, leftOffset, topOffset);
 
 	if (mShowRuler)
 		renderLinesNumbers(left, top, width, height, leftOffset, topOffset);
@@ -247,30 +243,6 @@ bool Editor::isRunning() const
 // Private
 ////////////////////////////////////////////////////////////////////////
 
-void Editor::renderFlags(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
-{
-	for (int y = 0; y < height; ++y)
-	{
-		bool disabled = false;
-
-		// Draw flag.
-		if (mShowFlags && mBuffer.hasFlags())
-		{
-			switch (mBuffer.getFlag(mScrollH + y))
-			{
-				case Flag::FLAG_DISABLED:
-					disabled = true;
-					mvaddch(y + top + topOffset, left + leftOffset, 'D');
-					break;
-			}
-		}
-	}
-
-	// Indicate that other rendering operations will have to
-	// be shifted to the right.
-	leftOffset += 2;
-}
-
 void Editor::renderLinesNumbers(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
 {
 	unsigned int line = mScrollH;
@@ -293,17 +265,14 @@ void Editor::renderLinesNumbers(int left, int top, int width, int height, unsign
 			}
 		}
 
-		// Do not render rulers for lines which are disabled.
-		if (!disabled)
-		{
-			++line;
+		// Allign right to left.
+		int currentSize = std::to_string(line).size();
+		int maxSize = std::to_string(mBuffer.getLines()).size();
 
-			// Allign right to left.
-			int currentSize = std::to_string(line).size();
-			int maxSize = std::to_string(mBuffer.getLines()).size();
-
-			mvprintw(y + top + topOffset, left + leftOffset + (maxSize - currentSize), std::to_string(line).c_str());
-		}
+		if (disabled)
+			mvaddch(y + top + topOffset, left + leftOffset + maxSize - 1, '-');
+		else
+			mvprintw(y + top + topOffset, left + leftOffset + (maxSize - currentSize), std::to_string(++line).c_str());
 	}
 
 	// Indicate that other rendering operations will have to
