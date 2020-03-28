@@ -33,11 +33,9 @@ Application::Application(const std::vector<std::string> &flags)
 			tab.add(View());
 			mEditor.add(tab);
 
-			if (!mEditor.open(file))
-			{
-				std::cout << mEditor.getError() << "\n";
-				mEditor.close();
-			}
+			// Do not handle the error! If a file could not
+			// be loaded then we just leave the buffer empty.
+			mEditor.open(file);
 		}
 	}
 
