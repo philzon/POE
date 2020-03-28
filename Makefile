@@ -36,7 +36,6 @@ clean:
 init:
 	@mkdir -p $(OBJDIR)
 	@mkdir -p $(BINDIR)
-	@cp $(RESDIR)/* $(BINDIR)
 
 lint:
 	@echo "Linting ..."
