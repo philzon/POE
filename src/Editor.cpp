@@ -277,6 +277,9 @@ void Editor::renderLinesNumbers(int left, int top, int width, int height, unsign
 
 	for (int y = 0; y < height; ++y)
 	{
+		if (y > mBuffer.getLines() - 1)
+			break;
+
 		bool disabled = false;
 
 		// Check if line is disabled from flags.
