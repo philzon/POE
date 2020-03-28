@@ -12,7 +12,6 @@
 
 #include "Buffer.hpp"
 #include "Logger.hpp"
-#include "Tab.hpp"
 #include "View.hpp"
 
 class Editor
@@ -24,7 +23,6 @@ public:
 	virtual void input(int ch);
 	virtual void render();
 
-	void add(const Tab &tab);
 	void close();
 	bool open(const std::string &path);
 	bool save(const std::string &path);
@@ -39,10 +37,6 @@ private:
 	void cut();
 	void copy();
 	void paste();
-	void next();
-	void previous();
-	void remove();
-	Buffer *getBuffer();
 
 	bool mIsRunning;
 	bool mShowRuler;
@@ -52,8 +46,7 @@ private:
 	std::string mClipboard;
 	std::string mCommand;
 
-	std::vector<Tab> mTabs;
-	unsigned int mCurrentTab;
+	View mView;
 
 	std::shared_ptr<Logger> mLogger;
 };

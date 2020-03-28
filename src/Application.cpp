@@ -19,23 +19,18 @@ Application::Application(const std::vector<std::string> &flags)
 		mEditor.close();
 	}
 
-	if (mFiles.empty())
-	{
-		Tab tab;
-		tab.add(View());
-		mEditor.add(tab);
-	}
-	else
+	if (!mFiles.empty())
 	{
 		for (std::string file : mFiles)
 		{
-			Tab tab;
-			tab.add(View());
-			mEditor.add(tab);
-
 			// Do not handle the error! If a file could not
 			// be loaded then we just leave the buffer empty.
 			mEditor.open(file);
+
+			// Quickfix!
+			// TODO: remove this later once we support
+			// several buffers (not tabs).
+			break;
 		}
 	}
 

@@ -3,7 +3,6 @@
 Editor::Editor()
 {
 	mIsRunning = true;
-	mCurrentTab = 0;
 	mShowRuler = true;
 }
 
@@ -12,14 +11,6 @@ Editor::~Editor()
 
 void Editor::input(int ch)
 {
-	Buffer *buffer = getBuffer();
-
-	if (!buffer)
-	{
-		mLogger->warning("Could not write to invalid buffer - action ignored");
-		return;
-	}
-
 	switch (ch)
 	{
 	// Copy (CTRL + C).
@@ -28,22 +19,14 @@ void Editor::input(int ch)
 		break;
 	// Disable line (CTRL + D).
 	case ('d' & 037):
-		if (buffer->getFlag(buffer->getCursor().y) == Flag::FLAG_DISABLED)
-			buffer->setFlag(buffer->getCursor().y, Flag::FLAG_NONE);
+		if (mView.getBuffer()->getFlag(mView.getBuffer()->getCursor().y) == Flag::FLAG_DISABLED)
+			mView.getBuffer()->setFlag(mView.getBuffer()->getCursor().y, Flag::FLAG_NONE);
 		else
-			buffer->setFlag(buffer->getCursor().y, Flag::FLAG_DISABLED);
+			mView.getBuffer()->setFlag(mView.getBuffer()->getCursor().y, Flag::FLAG_DISABLED);
 		break;
 	// Open code execution (CTRL + E).
 	case ('e' & 037):
 		// TODO: implement me!
-		break;
-	// Move to next view.
-	case ('n' & 037):
-		next();
-		break;
-	// Move to previous view.
-	case ('p' & 037):
-		previous();
 		break;
 	// Open (CTRL + O).
 	case ('o' & 037):
@@ -51,7 +34,7 @@ void Editor::input(int ch)
 		break;
 	// Close buffer (CTRL + Q).
 	case ('q' & 037):
-		remove();
+		close();
 		break;
 	// Toggle ruler (CTRL + R)
 	case ('r' & 037):
@@ -59,7 +42,7 @@ void Editor::input(int ch)
 		break;
 	// Save (CTRL + S).
 	case ('s' & 037):
-		save(buffer->getTitle());
+		save(mView.getBuffer()->getTitle());
 		break;
 	// Paste (CTRL + V).
 	case ('v' & 037):
@@ -74,48 +57,39 @@ void Editor::input(int ch)
 		cut();
 		break;
 	case KEY_UP:
-		buffer->up();
+		mView.getBuffer()->up();
 		break;
 	case KEY_DOWN:
-		buffer->down();
+		mView.getBuffer()->down();
 		break;
 	case KEY_LEFT:
-		buffer->left();
+		mView.getBuffer()->left();
 		break;
 	case KEY_RIGHT:
-		buffer->right();
+		mView.getBuffer()->right();
 		break;
 	case KEY_IC:
-		buffer->setInsertMode(!buffer->isInsertMode());
+		mView.getBuffer()->setInsertMode(!mView.getBuffer()->isInsertMode());
 		break;
 	case KEY_BACKSPACE:
 	case '\b':
 	case 127:
-		buffer->erase();
+		mView.getBuffer()->erase();
 		break;
 	case KEY_DC:
-		buffer->del();
+		mView.getBuffer()->del();
 		break;
 	// Do nothing with the resize signal.
 	case KEY_RESIZE:break;
 	default:
-		buffer->insert(static_cast<char>(ch));
+		mView.getBuffer()->insert(static_cast<char>(ch));
 		break;
 	}
 }
 
 void Editor::render()
 {
-	if (mTabs.empty())
-		return;
-
-	mTabs.at(mCurrentTab).render(COLS, LINES);
-}
-
-void Editor::add(const Tab &tab)
-{
-	mTabs.push_back(tab);
-	mCurrentTab = mTabs.size() - 1;
+	mView.render(0, 0, COLS, LINES);
 }
 
 void Editor::close()
@@ -125,14 +99,6 @@ void Editor::close()
 
 bool Editor::open(const std::string &path)
 {
-	Buffer *buffer = getBuffer();
-
-	if (!buffer)
-	{
-		mLogger->error("Could not open file to an invalid buffer");
-		return false;
-	}
-
 	// Split string into the following tokens:
 	// FILE    (string)
 	// LINE    (int)
@@ -176,17 +142,17 @@ bool Editor::open(const std::string &path)
 	if (tokens.size() > 0)
 		file = tokens.at(0);
 
-	if (!buffer->read(file, append))
+	if (!mView.getBuffer()->read(file, append))
 	{
-		mError = buffer->getError();
+		mError = mView.getBuffer()->getError();
 		return false;
 	}
 
-	buffer->setTitle(file);
+	mView.getBuffer()->setTitle(file);
 
 	// TODO: cursor can be set to an invalid position.
 	// Set cursor.
-	Cursor cursor = buffer->getCursor();
+	Cursor cursor = mView.getBuffer()->getCursor();
 
 	if (!append)
 		cursor = Cursor({0, 0});
@@ -197,31 +163,23 @@ bool Editor::open(const std::string &path)
 	if (tokens.size() > 2)
 		cursor.x = std::strtol(tokens.at(2).c_str(), nullptr, 10) - 1;
 
-	buffer->setCursor(cursor);
+	mView.getBuffer()->setCursor(cursor);
 
 	// Apply buffer modes.
 	if (readOnlyMode)
-		buffer->setReadOnlyMode(readOnlyMode);
+		mView.getBuffer()->setReadOnlyMode(readOnlyMode);
 
 	if (insertMode)
-		buffer->setReadOnlyMode(insertMode);
+		mView.getBuffer()->setReadOnlyMode(insertMode);
 
 	return true;
 }
 
 bool Editor::save(const std::string &path)
 {
-	Buffer *buffer = getBuffer();
-
-	if (!buffer)
+	if (!mView.getBuffer()->write(path))
 	{
-		mLogger->error("Could not save file from an invalid buffer");
-		return false;
-	}
-
-	if (!buffer->write(path))
-	{
-		mError = buffer->getError();
+		mError = mView.getBuffer()->getError();
 		return false;
 	}
 
@@ -239,7 +197,7 @@ std::string Editor::getError() const
 
 bool Editor::isRunning() const
 {
-	return mIsRunning && !mTabs.empty();
+	return mIsRunning;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -263,45 +221,4 @@ void Editor::copy()
 void Editor::paste()
 {
 	// TODO:
-}
-
-void Editor::next()
-{
-	if (mCurrentTab < mTabs.size() - 1)
-		++mCurrentTab;
-	else
-		mCurrentTab = 0;
-}
-
-void Editor::previous()
-{
-	if (mCurrentTab > 0)
-		--mCurrentTab;
-	else
-		mCurrentTab = mTabs.size() - 1;
-}
-
-void Editor::remove()
-{
-	if (mTabs.empty())
-		return;
-
-	// Remove selected view from tab.
-	mTabs.at(mCurrentTab).remove();
-
-	// If all views are removed, remove the tab.
-	if (mTabs.at(mCurrentTab).size() == 0)
-		mTabs.erase(mTabs.begin() + mCurrentTab);
-
-	// Reset tab selection if out of bounds.
-	if (mCurrentTab > mTabs.size() - 1)
-		mCurrentTab = mTabs.size() - 1;
-}
-
-Buffer *Editor::getBuffer()
-{
-	if (mTabs.empty())
-		return nullptr;
-
-	return mTabs.at(mCurrentTab).getBuffer();
 }
