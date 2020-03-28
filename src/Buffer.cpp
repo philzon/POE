@@ -147,12 +147,12 @@ void Buffer::clear()
 	mPreviousColumn = 0;
 	mCursor.x = 0;
 	mCursor.y = 0;
+
+	mLines.push_back(std::string(""));
 }
 
 void Buffer::up()
 {
-	check();
-
 	if (mCursor.y > 0)
 		--mCursor.y;
 
@@ -166,8 +166,6 @@ void Buffer::up()
 
 void Buffer::down()
 {
-	check();
-
 	if (mCursor.y < mLines.size() - 1)
 		++mCursor.y;
 
@@ -181,8 +179,6 @@ void Buffer::down()
 
 void Buffer::left()
 {
-	check();
-
 	if (mCursor.x > 0)
 	{
 		--mCursor.x;
@@ -199,8 +195,6 @@ void Buffer::left()
 
 void Buffer::right()
 {
-	check();
-
 	if (mCursor.x < mLines.at(mCursor.y).size())
 	{
 		++mCursor.x;
@@ -220,8 +214,6 @@ void Buffer::right()
 
 void Buffer::erase()
 {
-	check();
-
 	if (mReadOnlyMode)
 		return;
 
@@ -235,8 +227,6 @@ void Buffer::erase()
 
 void Buffer::del()
 {
-	check();
-
 	if (mReadOnlyMode)
 		return;
 
@@ -261,8 +251,6 @@ void Buffer::del()
 
 void Buffer::insert(char ch)
 {
-	check();
-
 	if (mReadOnlyMode)
 		return;
 
@@ -447,13 +435,6 @@ void Buffer::setWrap(unsigned int amount)
 ////////////////////////////////////////////////////////////////////////
 // Private
 ////////////////////////////////////////////////////////////////////////
-
-void Buffer::check()
-{
-	// At least one line is needed.
-	if (mLines.empty())
-		mLines.push_back("");
-}
 
 void Buffer::newline()
 {

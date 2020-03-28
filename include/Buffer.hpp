@@ -73,7 +73,6 @@ public:
 	void setWrap(unsigned int amount);
 
 private:
-	void check();
 	void newline();
 	void removeline();
 
