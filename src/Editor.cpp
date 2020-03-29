@@ -94,22 +94,7 @@ void Editor::render()
 		mScrollV = (cursor.x - (width - leftOffset)) + 1;
 
 	// Render all buffer in the view lines.
-	for (int y = 0; y < height; ++y)
-	{
-		// Prevent rendering of text when out of bounds.
-		if ((mScrollH + y + 1) > (mBuffer.getLines()))
-			break;
-
-		for (int x = 0; x < width; ++x)
-		{
-			// Prevent rendering of text when out of bounds.
-			if ((mScrollV + x + 1) > (mBuffer.getColumns(mScrollH + y)))
-				break;
-
-			// Print character.
-			mvaddch(y + top + topOffset, x + left + leftOffset, mBuffer.get(mScrollH + y, mScrollV + x));
-		}
-	}
+	renderText(left, top, width, height, leftOffset, topOffset);
 
 	// Render wrap boundries.
 	if (mBuffer.getWrap() > 0)
@@ -278,6 +263,26 @@ void Editor::renderLinesNumbers(int left, int top, int width, int height, unsign
 	// Indicate that other rendering operations will have to
 	// be shifted to the right.
 	leftOffset += std::to_string(mBuffer.getLines()).size() + 1;
+}
+
+void Editor::renderText(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+{
+	for (int y = 0; y < height; ++y)
+	{
+		// Prevent rendering of text when out of bounds.
+		if ((mScrollH + y + 1) > (mBuffer.getLines()))
+			break;
+
+		for (int x = 0; x < width; ++x)
+		{
+			// Prevent rendering of text when out of bounds.
+			if ((mScrollV + x + 1) > (mBuffer.getColumns(mScrollH + y)))
+				break;
+
+			// Print character.
+			mvaddch(y + top + topOffset, x + left + leftOffset, mBuffer.get(mScrollH + y, mScrollV + x));
+		}
+	}
 }
 
 void Editor::renderWrapper(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)

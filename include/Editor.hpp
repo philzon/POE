@@ -35,6 +35,7 @@ private:
 	// Helper functions for rendering.
 	void renderTitle(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
 	void renderLinesNumbers(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
+	void renderText(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
 	void renderWrapper(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
 
 	bool mIsRunning;
