@@ -29,8 +29,6 @@ public:
 	std::string getError() const;
 	bool isRunning() const;
 
-	void showRuler(bool state);
-
 private:
 	// Helper functions for rendering.
 	void renderTitle(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
