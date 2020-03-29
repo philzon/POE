@@ -161,7 +161,10 @@ bool Editor::open(const std::string &path)
 	Cursor cursor = mBuffer.getCursor();
 
 	if (!append)
+	{
 		cursor = Cursor({0, 0});
+		mBuffer.setDirty(false);
+	}
 
 	if (tokens.size() > 1 && std::all_of(tokens.at(1).begin(), tokens.at(1).end(), ::isdigit))
 		cursor.y = std::strtol(tokens.at(1).c_str(), nullptr, 10) - 1;
@@ -174,8 +177,6 @@ bool Editor::open(const std::string &path)
 	// Apply buffer modes.
 	if (readOnlyMode)
 		mBuffer.setReadOnlyMode(readOnlyMode);
-
-	mBuffer.setDirty(false);
 
 	return true;
 }
