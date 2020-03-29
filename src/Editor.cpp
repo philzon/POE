@@ -56,10 +56,6 @@ void Editor::input(int ch)
 
 void Editor::render()
 {
-	// Do not render anything if the buffer contains 0 lines.
-	if (mBuffer.getLines() == 0)
-		return;
-
 	// Screen position and size.
 	const int left = 0;
 	const int top = 0;
