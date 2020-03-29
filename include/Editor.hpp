@@ -32,15 +32,15 @@ public:
 
 private:
 	// Helper functions for rendering.
-	void renderTitle(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
-	void renderLineNumbers(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
-	void renderText(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
-	void renderWrapper(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset);
+	void renderTitle(unsigned int left, unsigned int top, unsigned int width, unsigned int height, unsigned int &leftOffset, unsigned int &topOffset);
+	void renderLineNumbers(unsigned int left, unsigned int top, unsigned int width, unsigned int height, unsigned int &leftOffset, unsigned int &topOffset);
+	void renderText(unsigned int left, unsigned int top, unsigned int width, unsigned int height, unsigned int &leftOffset, unsigned int &topOffset);
+	void renderWrapper(unsigned int left, unsigned int top, unsigned int width, unsigned int height, unsigned int &leftOffset, unsigned int &topOffset);
 
 	bool mIsRunning;
 
-	int mScrollV;
-	int mScrollH;
+	unsigned int mScrollV;
+	unsigned int mScrollH;
 	bool mShowRuler;
 
 	std::string mError;

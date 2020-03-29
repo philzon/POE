@@ -7,6 +7,7 @@ CC      := g++
 CFLAGS  := -std=c++11 \
            -O0 \
            -g \
+		   -Wall \
            -DBUILD_VERSION='"$(VERSION)"' \
            -DBUILD_COMMIT='"$(COMMIT)"' \
            -DBUILD_DATE='"$(DATE)"'

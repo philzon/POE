@@ -210,7 +210,7 @@ bool Editor::isRunning() const
 // Private
 ////////////////////////////////////////////////////////////////////////
 
-void Editor::renderTitle(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+void Editor::renderTitle(unsigned int left, unsigned int top, unsigned int width, unsigned int height, unsigned int &leftOffset, unsigned int &topOffset)
 {
 	std::string title = "-- ";
 	title = title + mBuffer.getTitle();
@@ -230,11 +230,11 @@ void Editor::renderTitle(int left, int top, int width, int height, unsigned int 
 	++topOffset;
 }
 
-void Editor::renderLineNumbers(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+void Editor::renderLineNumbers(unsigned int left, unsigned int top, unsigned int width, unsigned int height, unsigned int &leftOffset, unsigned int &topOffset)
 {
 	unsigned int line = mScrollH;
 
-	for (int y = 0; y < height; ++y)
+	for (unsigned int y = 0; y < height; ++y)
 	{
 		++line;
 
@@ -253,15 +253,15 @@ void Editor::renderLineNumbers(int left, int top, int width, int height, unsigne
 	leftOffset += std::to_string(mBuffer.getLines()).size() + 1;
 }
 
-void Editor::renderText(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+void Editor::renderText(unsigned int left, unsigned int top, unsigned int width, unsigned int height, unsigned int &leftOffset, unsigned int &topOffset)
 {
-	for (int y = 0; y < height; ++y)
+	for (unsigned int y = 0; y < height; ++y)
 	{
 		// Prevent rendering of text when out of bounds.
 		if ((mScrollH + y + 1) > (mBuffer.getLines()))
 			break;
 
-		for (int x = 0; x < width; ++x)
+		for (unsigned int x = 0; x < width; ++x)
 		{
 			// Prevent rendering of text when out of bounds.
 			if ((mScrollV + x + 1) > (mBuffer.getColumns(mScrollH + y)))
@@ -273,7 +273,7 @@ void Editor::renderText(int left, int top, int width, int height, unsigned int &
 	}
 }
 
-void Editor::renderWrapper(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+void Editor::renderWrapper(unsigned int left, unsigned int top, unsigned int width, unsigned int height, unsigned int &leftOffset, unsigned int &topOffset)
 {
 	mvaddch(mBuffer.getCursor().y - mScrollH + topOffset, mBuffer.getWrap() - mScrollV + leftOffset, '<');
 }

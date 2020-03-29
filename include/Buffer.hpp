@@ -43,9 +43,9 @@ public:
 	bool isMultilineMode() const;
 	bool isReadOnlyMode() const;
 	char get(unsigned int line, unsigned int column) const;
-	int getColumns(unsigned int line) const;
+	unsigned int getColumns(unsigned int line) const;
 	std::string getError() const;
-	int getLines() const;
+	unsigned int getLines() const;
 	Cursor getCursor() const;
 	std::string getLine(unsigned int line) const;
 	std::string getTitle() const;

@@ -307,7 +307,7 @@ char Buffer::get(unsigned int line, unsigned int column) const
 	return mLines.at(line).at(column);
 }
 
-int Buffer::getColumns(unsigned int line) const
+unsigned int Buffer::getColumns(unsigned int line) const
 {
 	return mLines.at(line).size();
 }
@@ -317,7 +317,7 @@ std::string Buffer::getError() const
 	return mError;
 }
 
-int Buffer::getLines() const
+unsigned int Buffer::getLines() const
 {
 	return mLines.size();
 }
