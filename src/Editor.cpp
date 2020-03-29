@@ -120,7 +120,6 @@ bool Editor::open(const std::string &path)
 	std::string token;
 	std::istringstream stream(path);
 
-	// TODO: Token parsing is broken - fix it, motherfucker!
 	while (std::getline(stream, token, ':'))
 		tokens.push_back(token);
 
@@ -158,17 +157,16 @@ bool Editor::open(const std::string &path)
 
 	mBuffer.setTitle(file);
 
-	// TODO: cursor can be set to an invalid position.
 	// Set cursor.
 	Cursor cursor = mBuffer.getCursor();
 
 	if (!append)
 		cursor = Cursor({0, 0});
 
-	if (tokens.size() > 1)
+	if (tokens.size() > 1 && std::all_of(tokens.at(1).begin(), tokens.at(1).end(), ::isdigit))
 		cursor.y = std::strtol(tokens.at(1).c_str(), nullptr, 10) - 1;
 
-	if (tokens.size() > 2)
+	if (tokens.size() > 2 && std::all_of(tokens.at(2).begin(), tokens.at(2).end(), ::isdigit))
 		cursor.x = std::strtol(tokens.at(2).c_str(), nullptr, 10) - 1;
 
 	mBuffer.setCursor(cursor);

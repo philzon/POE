@@ -1,6 +1,7 @@
 #ifndef EDITOR_HPP
 #define EDITOR_HPP
 
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <memory>
