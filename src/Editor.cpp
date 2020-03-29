@@ -126,7 +126,6 @@ bool Editor::open(const std::string &path)
 
 	bool append = false;
 	bool readOnlyMode = false;
-	bool insertMode = false;
 
 	// Parse buffer modes.
 	if (tokens.size() > 3)
@@ -137,9 +136,6 @@ bool Editor::open(const std::string &path)
 			{
 				case 'a':
 					append = true;
-					break;
-				case 'i':
-					insertMode = true;
 					break;
 				case 'r':
 					readOnlyMode = true;
@@ -180,9 +176,6 @@ bool Editor::open(const std::string &path)
 	// Apply buffer modes.
 	if (readOnlyMode)
 		mBuffer.setReadOnlyMode(readOnlyMode);
-
-	if (insertMode)
-		mBuffer.setReadOnlyMode(insertMode);
 
 	mBuffer.setDirty(false);
 
