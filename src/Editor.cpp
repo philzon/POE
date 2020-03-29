@@ -223,9 +223,9 @@ void Editor::renderTitle(int left, int top, int width, int height, unsigned int 
 		title = title + "*";
 
 	if (mBuffer.isReadOnlyMode())
-		title = title + " [R]";
+		title = title + " " + "[R]";
 
-	title = title + std::string(COLS - title.size(), '-');
+	title = title + " " + std::string(COLS - title.size() - 1, '-');
 
 	mvprintw(0, 0, title.c_str());
 
