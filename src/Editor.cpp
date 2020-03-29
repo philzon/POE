@@ -83,7 +83,7 @@ void Editor::render()
 		mScrollH = (cursor.y - (height - topOffset)) + 1;
 
 	if (mShowRuler)
-		renderLinesNumbers(left, top, width, height, leftOffset, topOffset);
+		renderLineNumbers(left, top, width, height, leftOffset, topOffset);
 
 	// Adjust view if vertical cursor goes out of view west.
 	if (cursor.x < mScrollV)
@@ -242,7 +242,7 @@ void Editor::renderTitle(int left, int top, int width, int height, unsigned int 
 	++topOffset;
 }
 
-void Editor::renderLinesNumbers(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
+void Editor::renderLineNumbers(int left, int top, int width, int height, unsigned int &leftOffset, unsigned int &topOffset)
 {
 	unsigned int line = mScrollH;
 
