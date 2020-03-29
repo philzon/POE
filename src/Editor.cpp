@@ -61,13 +61,10 @@ void Editor::render()
 		return;
 
 	// Screen position and size.
-	int left = 0;
-	int top = 0;
-	int width = COLS;
-	int height = LINES;
-
-	width = width - left;
-	height = height - top;
+	const int left = 0;
+	const int top = 0;
+	const int width = COLS - left;
+	const int height = LINES - top;
 
 	Cursor cursor = mBuffer.getCursor();
 
