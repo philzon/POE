@@ -67,7 +67,7 @@ void Editor::render()
 	int height = LINES;
 
 	width = width - left;
-	height = height - left;
+	height = height - top;
 
 	Cursor cursor = mBuffer.getCursor();
 
