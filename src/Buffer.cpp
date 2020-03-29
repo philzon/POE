@@ -361,11 +361,9 @@ unsigned int Buffer::getWrap() const
 // Setters
 ////////////////////////////////////////////////////////////////////////
 
-// TODO: some fucked up error about cursor limitations here!
-// Probably some type casting needed or just go for integers on every-fucking-thing!
 void Buffer::setCursor(unsigned int line, unsigned int column)
 {
-	setCursor(Cursor({line, column}));
+	setCursor(Cursor({column, line}));
 }
 
 void Buffer::setCursor(const Cursor &cursor)
@@ -376,7 +374,7 @@ void Buffer::setCursor(const Cursor &cursor)
 		mCursor.y = mLines.size() - 1;
 
 	if (mCursor.x > mLines.at(mCursor.y).size())
-		mCursor.x = mLines.at(mCursor.y).size() - 1;
+		mCursor.x = mLines.at(mCursor.y).size();
 }
 
 void Buffer::setDirty(bool state)
